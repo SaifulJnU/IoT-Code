@@ -1,0 +1,62 @@
+/* 
+  This code is written By Saiful Islam(B170305008) and Shamim Sarker(B170305037)
+  CSE-9th Batch,Jagannath Univesity,Dhaka
+ */
+const int Gas_led_pin = 12;
+const int Sound_Input_pin = A1;
+const int soundSensor_threshold = 85; //dB
+const int Sound_led_pin = 10;
+const int Gas_Input_pin = A0;
+const int gasSensor_threshold = 300; //ppm 
+void setup() 
+{
+  pinMode(Gas_led_pin, OUTPUT);
+  pinMode(Gas_Input_pin,INPUT);
+  pinMode(Sound_led_pin, OUTPUT);
+  pinMode(Gas_Input_pin, INPUT);
+  Serial.begin(9600);
+} 
+
+void loop()
+{
+  gas_Readings(); //function call for gas lavel reading 
+  sound_Readings(); //function call for sound lavel reading
+}
+
+void gas_Readings() 
+{
+  int gas_data = analogRead(Gas_Input_pin); //Reading gas in analog mode
+  Serial.print("GAS Lavel=");
+  Serial.print(gas_data);
+  Serial.print("\t");
+  
+  if (gas_data >= gasSensor_threshold) //Gas Sensor input condition for Led to glow
+  {
+    digitalWrite(Gas_led_pin, HIGH);
+  }
+  else
+  {
+    digitalWrite(Gas_led_pin, LOW);
+  }
+  delay(100);
+  }
+
+
+  void sound_Readings() 
+  {
+  int sound_data=analogRead(Sound_Input_pin); //Reading sound in analog mode
+  //Serial.print("Sound Lavel=");
+  //Serial.println(sound_data);
+    
+  if(sound_data>=soundSensor_threshold) //Gas Sensor input condition for Led to glow
+  {
+    //tone(buzzer, 4000, 300);
+    digitalWrite(Sound_Input_pin,HIGH);
+  }   
+  else
+  {
+    //noTone(buzzer);
+    digitalWrite(Sound_Input_pin,LOW);
+  }
+  delay(100);
+  }

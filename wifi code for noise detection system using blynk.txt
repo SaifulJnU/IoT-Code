@@ -1,0 +1,62 @@
+/* 
+  This code is written By Saiful Islam(B170305008) and Shamim Sarker(B170305037)
+  CSE-9th Batch,Jagannath Univesity,Dhaka
+ */
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+BlynkTimer timer;
+#define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
+char auth[] = "C7xSf5M9Spr8p_eVt3bRmqJZBBRP0Rw_"; //Enter Authentication code sent by Blynk on your regested email
+char ssid[] = "CSE_JnU"; // Enter WIFI Name Here
+char pass[] = "csejnu.09"; // Enter WIFI Password Here
+ 
+unsigned char LED=2; //D0
+unsigned char soundSensor_output_pin=5; //D4
+int SoundSensor_input_pin = A0; //smoke sensor is connected with the analog pin A0 
+int data = 0;
+int SoundSensor_threshold=70; // in dB
+
+void setup()
+{
+  pinMode(LED,OUTPUT);
+  pinMode(soundSensor_output_pin,OUTPUT);
+  
+  Serial.begin(115200);
+  
+  Blynk.begin(auth, ssid, pass);
+  timer.setInterval(1000L, getSendData);
+}
+ 
+void loop() 
+{
+  timer.run(); // Initiates SimpleTimer
+  Blynk.run();
+  sound_Readings();
+}
+
+
+  void sound_Readings() 
+  {
+  int sound_data=analogRead(SoundSensor_input_pin); //Reading sound in analog mode 
+  if (sound_data>=SoundSensor_threshold)
+  {
+    digitalWrite(2,HIGH); //D1 pin in ESP8266
+  }
+  else
+  {
+    digitalWrite(2,LOW); //D1 pin in ESP8266
+  }
+  delay(10);
+}
+
+void getSendData()
+{
+  data = analogRead(SoundSensor_input_pin); 
+  Blynk.virtualWrite(V2, data); //here v2 is virtual pin
+
+  if (data >= SoundSensor_threshold )
+  {
+    Blynk.notify("Noise Detected!"); 
+    Blynk.email("saiful.cse98@gmail.com", "Alert! ", "Mr. Saiful, Noise is detected! You need to know that the sound level is more than 85dB right now!");
+  }
+}
